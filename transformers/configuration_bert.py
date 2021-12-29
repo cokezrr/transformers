@@ -110,8 +110,7 @@ class BertConfig(PretrainedConfig):
             self.type_vocab_size = type_vocab_size
             self.initializer_range = initializer_range
             self.layer_norm_eps = layer_norm_eps
-            self.svPN = False # zrr 21.08.15
-            self.cls_cov = False # zrr 21.10.12
+            self.MGCrP = True # change this parameter to decide if using MGCrP module in BERT.
         else:
             raise ValueError("First argument must be either a vocabulary size (int)"
                              " or the path to a pretrained model config file (str)")

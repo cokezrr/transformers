@@ -9,10 +9,9 @@ from ..representation.covariance import Covariance
 
 
 class Classifier(nn.Module):
-    def __init__(self,num_classes=1000, input_dim=384, representationConfig={}, cls_cov=False, representationConfig_cls={}):
+    def __init__(self,num_classes=1000, input_dim=384, representationConfig={}):
         super(Classifier, self).__init__()
         self.re_type = representationConfig['type']
-        self.cls_cov = cls_cov
         normConfig = representationConfig['normalization']
         if self.re_type == 'second-order':
             self.representation = Covariance(**representationConfig['args'])
@@ -31,25 +30,11 @@ class Classifier(nn.Module):
             self.normalization = nn.Identity()
             self.visual_fc = nn.Linear(input_dim, num_classes) if num_classes > 0 else nn.Identity()
         
-        if self.cls_cov:
-            self.representation_cls = Covariance(**representationConfig_cls['args'])
-            normConfig_cls = representationConfig_cls['normalization']
-            self.normalization_cls = svPN(**normConfig_cls['args'])
-            output_dim=self.normalization_cls.output_dim
-            self.cls_fc = nn.Linear(output_dim, num_classes)
-        else:
-            self.cls_fc = nn.Linear(input_dim, num_classes)
+        self.cls_fc = nn.Linear(input_dim, num_classes)
     def _triuvec(self, x):
         return Triuvec.apply(x)
     def forward(self, x):
-        # import pdb;pdb.set_trace()
         head = x[:,0]
-        if self.cls_cov:
-            head = head.unsqueeze(-1).unsqueeze(-1)
-            head = self.representation_cls(head)
-            # head = head.reshape(x.shape[0], -1)
-            head = self.normalization_cls(head)
-            head = head.view(head.size(0), -1)
         head = self.cls_fc(head)
         if self.re_type is not None:
             x = x[:, 1:]

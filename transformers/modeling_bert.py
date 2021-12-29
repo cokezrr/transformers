@@ -51,27 +51,7 @@ BERT_PRETRAINED_MODEL_ARCHIVE_MAP = {
     'bert-base-german-dbmdz-uncased': "https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-german-dbmdz-uncased-pytorch_model.bin",
 }
 
-representationConfig_cls = dict(
-    type='second-order',
-    args=dict(
-        cov_type='cross',
-        remove_mean=False,
-        dimension_reduction=[112, 48],
-        input_dim=1024,
-    ),
-    normalization=dict(
-        type='svPN',
-        args=dict(
-            alpha=0.5,
-            iterNum=1,
-            svNum=1,
-            regular=nn.Dropout(0.7),
-            vec='full',
-            input_dim=48,
-        ),
-    ),
-)#zrr
-
+####### parameters in MGCrP module. #######
 representationConfig = dict(
     type='second-order',
     args=dict(
@@ -91,7 +71,7 @@ representationConfig = dict(
             input_dim=48,
         ),
     ),
-)#zrr
+) 
 
 def load_tf_weights_in_bert(model, config, tf_checkpoint_path):
     """ Load tf checkpoints in a pytorch model.
@@ -661,13 +641,12 @@ class BertModel(BertPreTrainedModel):
 
         self.embeddings = BertEmbeddings(config)
         self.encoder = BertEncoder(config)
-        if not config.svPN: # zrr
+        if not config.MGCrP: 
             self.pooler = BertPooler(config)
         else:
             representationConfig['normalization']['args']['input_dim']=representationConfig['args']['dimension_reduction']
-            representationConfig_cls['normalization']['args']['input_dim']=representationConfig_cls['args']['dimension_reduction']
-            representationConfig_cls['args']['input_dim']=representationConfig['args']['input_dim']=config.hidden_size
-            self.pooler = Classifier(num_classes=self.config.num_labels,input_dim=config.hidden_size,representationConfig=representationConfig, cls_cov=config.cls_cov, representationConfig_cls=representationConfig_cls) # zrr 21.08.15
+            representationConfig['args']['input_dim']=config.hidden_size
+            self.pooler = Classifier(num_classes=self.config.num_labels,input_dim=config.hidden_size,representationConfig=representationConfig) 
 
         self.init_weights()
 
@@ -1061,10 +1040,10 @@ class BertForSequenceClassification(BertPreTrainedModel):
     def __init__(self, config):
         super(BertForSequenceClassification, self).__init__(config)
         self.num_labels = config.num_labels
-        self.svPN = config.svPN # zrr 21.08.15
+        self.MGCrP = config.MGCrP 
         
         self.bert = BertModel(config)
-        if not self.svPN: # zrr 21.08.15
+        if not self.MGCrP: 
             self.dropout = nn.Dropout(config.hidden_dropout_prob)
             self.classifier = nn.Linear(config.hidden_size, self.config.num_labels)
         self.init_weights()
@@ -1078,11 +1057,10 @@ class BertForSequenceClassification(BertPreTrainedModel):
                             position_ids=position_ids,
                             head_mask=head_mask,
                             inputs_embeds=inputs_embeds)
-        if self.svPN: # zrr 21.08.15
+        if self.MGCrP: 
             logits = outputs[1]
         else:
             pooled_output = outputs[1]
-        # import pdb;pdb.set_trace()
             pooled_output = self.dropout(pooled_output)
             logits = self.classifier(pooled_output)
 
