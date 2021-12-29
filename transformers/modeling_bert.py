@@ -57,7 +57,7 @@ representationConfig = dict(
     args=dict(
         cov_type='cross',
         remove_mean=True,
-        dimension_reduction=[112, 48],
+        dimension_reduction=[56, 32],
         input_dim=1024,
     ),
     normalization=dict(
@@ -66,7 +66,7 @@ representationConfig = dict(
             alpha=0.5,
             iterNum=1,
             svNum=1,
-            regular=nn.Dropout(0.7),
+            regular=nn.Dropout(0.8),
             vec='full',
             input_dim=48,
         ),
