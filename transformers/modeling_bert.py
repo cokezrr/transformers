@@ -644,7 +644,8 @@ class BertModel(BertPreTrainedModel):
         if not config.MGCrP: 
             self.pooler = BertPooler(config)
         else:
-            representationConfig['normalization']['args']['input_dim']=representationConfig['args']['dimension_reduction']
+            representationConfig['normalization']['args']['input_dim']=representationConfig['args']['dimension_reduction']=[config.MGCrP_q, config.MGCrP_k]
+            representationConfig['normalization']['args']['regular']=nn.Dropout(config.MGCrP_dp)
             representationConfig['args']['input_dim']=config.hidden_size
             self.pooler = Classifier(num_classes=self.config.num_labels,input_dim=config.hidden_size,representationConfig=representationConfig) 
 

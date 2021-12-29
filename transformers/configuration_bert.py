@@ -111,6 +111,9 @@ class BertConfig(PretrainedConfig):
             self.initializer_range = initializer_range
             self.layer_norm_eps = layer_norm_eps
             self.MGCrP = True # change this parameter to decide if using MGCrP module in BERT.
+            self.MGCrP_q = 56
+            self.MGCrP_k = 32 # change those two parameters to decide dimension of MGCrP module in BERT.
+            self.MGCrP_dp = 0.8 # change this parameter to adjust dropout rate of MGCrP module in BERT.
         else:
             raise ValueError("First argument must be either a vocabulary size (int)"
                              " or the path to a pretrained model config file (str)")
