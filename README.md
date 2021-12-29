@@ -8,7 +8,7 @@ What’s more, the proposed classification head generalizes to language transfor
 
 This project provides the source code for text classification section in the SoT paper.
 
-# Finetuning BERT with MGCrP module on GLUE tasks
+# Fine-tuning BERT with MGCrP module on GLUE tasks
 
 ## Pre-trained models
 
@@ -20,12 +20,12 @@ Model | Download
 `bert-large-cased` | [bert.base.cased.bin](https://s3.amazonaws.com/models.huggingface.co/bert/bert-large-cased-pytorch_model.bin)
 
 **Note:**
-You don't need to download above models before fine-tune on GLUE tasks, as when you run code for the first time, code will automatically download those models for you.
+You don't need to download above models before fine-tuning on GLUE tasks, as when you run code for the first time, code will automatically download those models for you.
 
 ## Results
 
 **[GLUE (Wang et al., 2019)](https://gluebenchmark.com/)**
-_(dev set, single model, single-task finetuning)_
+_(dev set, single model, single-task fine-tuning)_
 
 Model | CoLA | RTE | MNLI | QNLI 
 ---|---|---|---|---
@@ -41,7 +41,7 @@ python download_glue_data.py --data_dir glue_data --tasks all
 ```
 
 ### 2) Fine-tuning on GLUE task:
-Example fine-tuning BERT-base with MGCrP module cmd for `RTE` task
+Example of fine-tuning BERT-base with MGCrP module cmd for `RTE` task
 ```bash
 export GLUE_DIR=/path/to/GLUE
 export TASK_NAME=RTE
